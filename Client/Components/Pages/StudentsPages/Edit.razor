@@ -1,0 +1,42 @@
+﻿@page "/students/student/edit/{StudentId}"
+@inject NavigationManager _Navigation
+@rendermode InteractiveServer
+<h3>Edit</h3>
+
+@if(studentWithTargetId is not null)
+{
+    <EditForm Model="student" style="display: flex; justify-content:center; flex-direction:column; gap:10px; width: 500px" OnSubmit="@(() => OnSubmit())">
+        <label for="Name">Id</label>
+        <input type="number" id="Id" name="id" @bind=@studentWithTargetId.Id @bind:event="oninput" placeholder="@studentWithTargetId.Id" />
+        <label for="Name">Name</label>
+        <input type="text" id="Name" name="name" @bind=@studentWithTargetId.Name @bind:event="oninput" placeholder="@studentWithTargetId.Name" />
+        <label for="Age">Age</label>
+        <input type="number" id="Age" name="age" @bind=@studentWithTargetId.Age @bind:event="oninput" placeholder="@studentWithTargetId.Age" />
+        <label for="Mobile">Mobile</label>
+        <input type="text" id="Mobile" name="mobile" @bind=@studentWithTargetId.Mobile @bind:event="oninput" placeholder="@studentWithTargetId.Mobile" />
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string? StudentId { get; set; }
+    public Student student = new Student();
+    public Student? studentWithTargetId;
+    HttpClient httpClient = new HttpClient();
+    private async Task GetStudent()
+    {
+        studentWithTargetId = await httpClient.GetFromJsonAsync<Student>($"http://localhost:5297/api/V1/students/student/{StudentId}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.GetStudent();
+    }
+
+    public async Task OnSubmit()
+    {
+        await httpClient.PutAsJsonAsync<Student>($"http://localhost:5297/api/V1/students/student/{StudentId}", studentWithTargetId ?? new() {Id=0, Name="default", Age=0, Mobile="default"});
+        _Navigation.NavigateTo("/students");
+    }
+}

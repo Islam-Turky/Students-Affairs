@@ -1,0 +1,26 @@
+﻿@page "/students/student/add"
+@inject NavigationManager _Navigation
+@rendermode InteractiveServer
+<h3>Add</h3>
+
+<EditForm Model=newStudent style="display: flex; justify-content:center; flex-direction:column; gap:10px; width: 500px" OnSubmit="@(() => OnSubmit())">
+    <label for="newId">Id</label>
+    <input type="number" id="newId" @bind=newStudent.Id @bind:event="oninput"/>
+    <label for="newName">Name</label>
+    <input type="text" id="newName" @bind=newStudent.Name @bind:event="oninput" />
+    <label for="newAge">Age</label>
+    <input type="number" id="newAge" @bind=newStudent.Age @bind:event="oninput" />
+    <label for="newMobile">Mobile</label>
+    <input type="text" id="newMobile" @bind=newStudent.Mobile @bind:event="oninput" />
+    <button type="submit" class="btn-outline-warning">Add</button>
+</EditForm>
+
+@code {
+    public Student newStudent = new Student();
+    HttpClient http = new HttpClient();
+    public async Task OnSubmit()
+    {
+        await http.PostAsJsonAsync<Student>("http://localhost:5297/api/V1/students/student", newStudent ?? new() { Id = 0, Name = "default", Age = 0, Mobile = "default" });
+        _Navigation.NavigateTo("/students");
+    }
+}

@@ -1,0 +1,56 @@
+﻿@page "/students"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Text.Json
+@rendermode InteractiveServer
+
+<PageTitle>Students</PageTitle>
+
+<QuickGrid Items="@queryableStudents" Pagination="@pagination">
+    <PropertyColumn Property="@(s => s.Id)" Sortable="true"/>
+    <PropertyColumn Property="@(s => s.Name)">
+        <ColumnOptions>
+            <div class="search-box">
+                <input type="text" autofocus @bind="filterName" @oninput="@(() => Filter())" placeholder="Name..." />
+            </div>
+        </ColumnOptions>
+    </PropertyColumn>
+    <PropertyColumn Property="@(s => s.Age)"/>
+    <PropertyColumn Property="@(s => s.Mobile)" />
+    <TemplateColumn Title="Actions" Align="Align.Center">
+        <a href="students/student/details/@context.Id">Details</a>
+        <a href="students/student/edit/@context.Id">Edit</a>
+        <button @onclick="() => Remove(context)">Remove</button>
+    </TemplateColumn>
+    <a href="students/student/add">Add Student</a>
+</QuickGrid>
+<Paginator State="@pagination" />
+
+@code {
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    string? filterName;
+    private IEnumerable<Student>? students = Array.Empty<Student>();
+    IQueryable<Student>? queryableStudents;
+    private async Task GetAllStudents()
+    {
+        HttpClient httpClient = new HttpClient();
+        students = await httpClient.GetFromJsonAsync<IEnumerable<Student>>("http://localhost:5297/api/V1/students");
+        queryableStudents = students?.AsQueryable();
+    }
+    public void Filter()
+    {
+        if (!string.IsNullOrEmpty(filterName))
+        {
+            queryableStudents = queryableStudents?.Where(n => n.Name!.Contains(filterName, StringComparison.CurrentCultureIgnoreCase));
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await this.GetAllStudents();
+    }
+    public async Task Remove(Student student)
+    {
+        HttpClient http = new HttpClient();
+        await http.DeleteFromJsonAsync<Student>($"http://localhost:5297/api/V1/students/student/{student.Id}");
+        await this.GetAllStudents();
+    }
+}

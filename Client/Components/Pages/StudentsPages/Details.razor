@@ -1,0 +1,31 @@
+﻿@page "/students/student/details/{StudentId}"
+@rendermode InteractiveServer
+<h3>Details</h3>
+
+
+
+@if (studentWithTargetId is not null)
+{
+    <ul>
+        <li>Id: @studentWithTargetId.Id</li>
+        <li>Name: @studentWithTargetId.Name</li>
+        <li>Age: @studentWithTargetId.Age</li>
+        <li>Mobile: @studentWithTargetId.Mobile</li>
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public string? StudentId { get; set; }
+    public Student? studentWithTargetId;
+    HttpClient httpClient = new HttpClient();
+    private async Task GetStudent()
+    {
+        studentWithTargetId = await httpClient.GetFromJsonAsync<Student>($"http://localhost:5297/api/V1/students/student/{StudentId}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.GetStudent();
+    }
+}

@@ -1,0 +1,6 @@
+@StudentAffairsAPIs_HostAddress = http://localhost:5297
+
+GET {{StudentAffairsAPIs_HostAddress}}/
+Accept: application/json
+
+###
