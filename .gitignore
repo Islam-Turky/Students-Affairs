@@ -1,5 +1,6 @@
-./vs
-./StudentAffairsAPIs/bin
-./StudentAffairsAPIs/obj
-./Client/bin
-./Client/obj
+/.vs
+/StudentAffairsAPIs/bin
+/StudentAffairsAPIs/obj
+/Client/bin
+/Client/obj
+/github
