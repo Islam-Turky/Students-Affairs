@@ -1,6 +1,6 @@
 /.vs
-/StudentAffairsAPIs/bin
+/StudentAffairsAPIs/bin/Debug
 /StudentAffairsAPIs/obj
-/Client/bin
+/Client/bin/Debug
 /Client/obj
 /github
